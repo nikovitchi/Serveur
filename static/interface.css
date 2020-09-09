@@ -1,0 +1,107 @@
+
+  #messages li{
+    list-style: none;
+    background: linear-gradient(to right top, #6f96f3, #164ed2);
+    color: #fff;
+    width: 300px; 
+    font-size: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 1px 15px rgba(32, 33, 36, .28);
+    margin: 10px;
+  }
+
+  #messages{
+    position: fixed;
+    top:  70px;
+    height: 75%;
+    right: 30px;
+    overflow-y:scroll;
+    /* overflow:hidden; */
+   
+  }
+
+  #footer{
+    z-index: 1;
+    position: relative;
+    width: 100%;
+    background: #164ed2;
+    /* background: #f1f1f1; */
+    border-top: 1px solid rgb(129, 124, 124);
+
+  }
+
+
+
+
+  /* #sendButton {
+    color: #444;
+    z-index: 1;
+    height: 50px;
+    right: 0;
+    top: 0;
+    position: absolute;
+  } */
+
+  .home-chat{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    overflow-y:scroll;
+  }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #f1f1f1
+  }
+
+  h1 {
+    font-size: 20px;
+    text-align: center;
+    display: block;
+    background: linear-gradient(to right top, #6f96f3, #164ed2);
+    padding: 20px;
+    color: #fff;
+    border-radius: 50px
+  }
+  
+
+
+  @keyframes showhide {
+    from {
+      transform: scale(.5);
+      opacity: 0
+    }
+  }
+
+  @keyframes showchat {
+    from {
+      transform: scale(0);
+      opacity: 0
+    }
+  }
+
+  @media screen and (max-width:480px) {
+    #whatsapp-chat {
+      width: auto;
+      left: 5%;
+      right: 5%;
+      font-size: 80%
+    }
+  }
+
+  .hide {
+    display: none;
+    animation-name: showhide;
+    animation-duration: 1.5s;
+    transform: scale(1);
+    opacity: 1
+  }
+
+  .show {
+    display: block;
+    animation-name: showhide;
+    animation-duration: 1.5s;
+    transform: scale(1);
+    opacity: 1
+  }
