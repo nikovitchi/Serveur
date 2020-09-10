@@ -1,75 +1,3 @@
-<!-- <!doctype html>
-
-<html>
-  <head >
-    <title>flutter chat</title>
-    <style >
-
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {background: #333; font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 90%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(218, 241, 248); border: none; padding: 10px; }
-      #isWriting { background:  rgb(4, 87, 112); padding: 3px; position:fixed; bottom: 41px; width: 100%;}
-
-      /* #messages {width: 50%; list-style-type: none; margin: 0; padding: 0; }
-      #messages li {width: 50%; padding: 5px 10px; }
-      #messages {width: 50%; margin-bottom: 60px }
-      #connectedUsers { list-style-type: none; margin: 0; padding: 0; width: 50%; top: 0;height: 200px;}
-  
-      #connectedUsers li { padding: 5px 10px; width: 50%;}
-      #connectedUsers { margin-bottom: 60px ;width: 50%;} */
-
-      #colorPicker {border: none;background: rgb(218, 241, 248);  position: fixed; bottom: 0; width: 10%; right: 0px;text-align: center;}
-      
-
-      #messages {
-        float:left;  
-        width:80%; 
-        padding: 10px;
-        list-style-type: none;
-      }
-      #connectedUsers {
-        float:left;  
-        width:20%; 
-        padding: 10px;
-        background: rgb(29, 29, 29);
-        list-style-type: none;
-        color: aliceblue;
-      }
-
-
-    </style>
-
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="/static/interfaceScript.js"></script>
-
-  </head>
-  <body>
-    
-    <ul class="list" id="messages"></ul>
-    <ul class="list" id="connectedUsers"></ul>
-      
-
-
-    <div id="textField">
-      <form action="">
-        <input id="m" autocomplete="off" /><button>Send</button>
-      </form>
-    </div>
-
-    <p id = "isWriting"> </p>
-    
-
-    <div id="colorPicker">Chose Your Text Color
-      <input type="color" id="head" name="head" value="#e66465">
-    </div>
-  
-  </body>
-</html> -->
-
 <html>
 
 
@@ -87,7 +15,6 @@
       <h1>Radio Trotoir</h1>
     <div class='home-chat'>
       <ul id="messages"></ul>
-
     <form>
       <div class="input-group mb-3">
         <input id="textField" type="text" class="form-control" placeholder="Write your message" aria-label="Recipient's username" aria-describedby="button-addon2">
@@ -96,15 +23,7 @@
         </div>
       </div>
     </form>
-  
     </div>
-
-
-
-
-
-
-
   </body>
 
   </html>
