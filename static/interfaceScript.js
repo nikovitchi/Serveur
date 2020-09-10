@@ -1,51 +1,43 @@
 
 $(function () {
     var socket = io.connect();
-    var x=0; 
-    var ul = document.getElementById("messages");
-    var listItems = ul.getElementsByTagName("li");
-    const name = prompt('Ki Semak Ellah ?');
-    var colorPicker = document.getElementById("color");
+    const myName = prompt('Type your name here.');
+    var listItems = document.getElementById("messages").getElementsByTagName("li");
     var typing = false;
-    //socket.emit('color changed', name);
-    //colorPicker.addEventListener("input", function () {
-    //res.innerHTML = c.value;
-  //}, false);
 
-    socket.emit('new user', name);
+    //Call when the socket get created.
+    socket.emit('new user', myName);
 
+    //Call when a 'new user' event is emitted to this client.
     socket.on('new user', (name) => {
         $('#messages').append($('<li>').text(name + " logged in"));
-          listItems[x].style.background = "#4682B4";
-          x++
-          window.scrollTo(0, document.getElementById("messages").scrollHeight);
-         
+        listItems[listItems.length-1].style.background = "#4682B4";
+        $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
     });
 
-    $('form').submit(function(e) {
+    //Call when the textfield content is sent by pressing the button or enter.
+    $('form').submit(function (e) {
         e.preventDefault(); // prevents page reloading
         socket.emit('chat message', $('#textField').val());
         $('#textField').val('');
         return false;
     });
 
-    $('#textField').on('keydown', function(name){
-        if (!typing){
+    //Get user typing state.
+    $('#textField').on('keydown', function (name) {
+        if (!typing) {
             typing = true;
             socket.emit('userTyping');
-            var checkUserStoped = setInterval(function(){
+            var checkUserStoped = setInterval(function () {
                 typing = false;
                 socket.emit('userStopedTyping')
                 clearInterval(checkUserStoped);
-            },5000)            
+            }, 5000)
         }
-        
-        
     });
 
-
-
-    socket.on('userTyping', function(usersTyping){
+    //Call when another user on the same socket starts typing
+    socket.on('userTyping', function (usersTyping) {
         var usersTypingText = '';
         if (usersTyping.length == 0) {
             usersTypingText = usersTyping[0];
@@ -62,31 +54,24 @@ $(function () {
                 }
             }
             $('#isWriting').text(usersTypingText + ' typing');
-        }    
-        })
-
-
-        socket.on('userStopedTyping',()=>{
-            typing = false;
-        });
-        
-        socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg.name + msg.msg)); 
-              listItems[x].style.background = msg.color;
-              x++;             
-              $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight}, 1000);
-        });
-          
-            
-
-        socket.on('refresh', ()=>{
-            window.location.reload(false);
-        });
-
+        }
     })
 
-    
-    
-    
+    //Call when a 'chat message' event is received
+    socket.on('chat message', function (msg) {
+        if (msg.name == myName + ' : ') {
+            $('#messages').append($('<li>').text("You : " + msg.msg));
+        } else {
+            $('#messages').append($('<li>').text(msg.name + msg.msg));
+        }
+        listItems[listItems.length-1].style.background = msg.color;
+        $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
+    });
+
+})
+
+
+
+
 
 
