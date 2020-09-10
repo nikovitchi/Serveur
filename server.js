@@ -28,8 +28,8 @@ io.on('connection', socket => {
 
         //Call when a 'chat message' event is received
         socket.on('chat message', msg => {
-            msg = checkMessagesIfEmpty(msg);
-            if (msg.length == 0) {return;}
+            //msg = checkMessagesIfEmpty(msg);
+            if (!msg || /^\s*$/.test(msg)) {return;}
             if (users[socket.id] != null) {
                 io.emit('chat message', {
                     msg: msg,
@@ -95,26 +95,4 @@ function checkNamesForSpaces(name) {
     while (i < name.length);
 
     return name;
-}
-
-function checkMessagesIfEmpty(msg){
-    var i = 0;
-            do {
-                if (msg.length == 1) {
-                    break
-                }
-                if (i == msg.length - 1 || msg.charAt(i - 1) == ' ') {
-                    return;
-                }
-                if (msg.charAt(i) == ' ') {
-                    msg.replace(msg.charAt(i), '');
-                }
-                else {
-                    break;
-                }
-                i++;
-            }
-            while (i = msg.length);
-
-            return msg;
 }
