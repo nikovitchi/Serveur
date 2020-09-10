@@ -22,7 +22,7 @@ io.on('connection', socket => {
             name = checkNamesForSpaces(name);
             users[socket.id] = name;
             usersColors[socket.id] = getRandomColor();
-
+            //need to add user check if name already used
             console.log(users[socket.id] + ' logged in')
             io.emit('new user', name);
         });

@@ -10,9 +10,16 @@ $(function () {
 
     //Call when a 'new user' event is emitted to this client.
     socket.on('new user', (name) => {
+        
         $('#messages').append($('<li>').text(name + " logged in"));
         listItems[listItems.length-1].style.background = "#4682B4";
         $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
+        if(name == myName){
+            
+            listItems[listItems.length-1].style.left = "0%";
+        }else{
+            listItems[listItems.length-1].style.left = "65%";
+        }
     });
 
     //Call when the textfield content is sent by pressing the button or enter.
@@ -59,13 +66,22 @@ $(function () {
 
     //Call when a 'chat message' event is received
     socket.on('chat message', function (msg) {
+       
         if (msg.name == myName + ' : ') {
             $('#messages').append($('<li>').text("You : " + msg.msg));
+            //listItems[listItems.length-1].innerHTML = "hi";
         } else {
             $('#messages').append($('<li>').text(msg.name + msg.msg));
+            //listItems[listItems.length-1].innerHTML = "hi";
         }
         listItems[listItems.length-1].style.background = msg.color;
         $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
+        if(msg.name == myName + ' : '){
+            
+            listItems[listItems.length-1].style.left = "0%";
+        }else{
+            listItems[listItems.length-1].style.left = "65%";
+        }
     });
 
 })
