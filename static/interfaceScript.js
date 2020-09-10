@@ -50,11 +50,12 @@ $(function () {
         listItems[listItems.length-1].style.background = "#4682B4";
         console.log(connectedUsers);
         $('#nbrContact').text(connectedUsers.length)
+        var d = new Date();
         if(connectedUsers){
           $('#contactList').append($('<li id="'+ user.id +'" class="list-group-item d-flex justify-content-between lh-condensed">\
           <div>\
             <h6 class="my-0">'+ user.name +'</h6>\
-            <small class="text-muted">Brief description</small>\
+            <small class="text-muted"> Connected on : '+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+ '</small>\
           </div>\
           <span class="text-muted">connected</span>\
         </li>'))

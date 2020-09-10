@@ -28,7 +28,7 @@ io.on('connection', socket => {
 
         //Call when a 'chat message' event is received
         socket.on('chat message', msg => {
-            //msg = checkMessagesIfEmpty(msg);
+            msg = msg.replace("inch", "****");
             if (!msg || /^\s*$/.test(msg)) {return;}
             if (users[socket.id] != null) {
                 io.emit('chat message', {
