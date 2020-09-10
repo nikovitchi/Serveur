@@ -1,7 +1,7 @@
 
 $(function () {
     var clientSocket = io.connect();
-    const userName = prompt('Type your name here.');
+    var userName = '';
     var listItems = document.getElementById("messages").getElementsByTagName("li");
     var typing = false;
     var connectedUsers = [];
@@ -9,6 +9,10 @@ $(function () {
     
        
     clientSocket.on('connect', () => {
+      userName = prompt('Type your name here.')
+        if(userName == null){
+            userName = '';
+        }
         currentUser = {
             name: userName,
             id: clientSocket.id,
@@ -17,6 +21,21 @@ $(function () {
         //Call when the clientSocket get created.
         clientSocket.emit('new user', currentUser);
     });
+
+    clientSocket.on('userLeft', user => {
+      // if(connectedUsers){
+        // connectedUsers.map(function(e) {return e.id;}).indexOf()
+        const index = connectedUsers.findIndex(e => e.id === user.id);
+        console.log(index, user);
+        if(index > -1) {
+          console.log("here2");
+          connectedUsers.splice(index, 1);
+          console.log(connectedUsers);
+        }
+        $('#'+user.id).remove();
+        $('#nbrContact').text(connectedUsers.length);
+      // }
+    })
 
     //Call when a 'new user' event is emitted to this client.
     clientSocket.on('new user', user => { 
@@ -29,6 +48,17 @@ $(function () {
             listItems[listItems.length-1].style.left = "65%";
         }
         listItems[listItems.length-1].style.background = "#4682B4";
+        console.log(connectedUsers);
+        $('#nbrContact').text(connectedUsers.length)
+        if(connectedUsers){
+          $('#contactList').append($('<li id="'+ user.id +'" class="list-group-item d-flex justify-content-between lh-condensed">\
+          <div>\
+            <h6 class="my-0">'+ user.name +'</h6>\
+            <small class="text-muted">Brief description</small>\
+          </div>\
+          <span class="text-muted">connected</span>\
+        </li>'))
+        }
         $('html,body').stop().animate({ scrollTop: $("html, body")[0].scrollHeight }, 1000);
     });
 
