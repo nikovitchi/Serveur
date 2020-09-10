@@ -13,11 +13,13 @@
   }
 
   #messages{
-    position: fixed;
-    top:  70px;
-    height: 75%;
+    /* position: fixed; */
+    /* top:  70px; */
+    padding-top: 30px;
+    padding-bottom: 50px;
+    height: 100%;
     width: 100%;
-    overflow-y:scroll;
+    /* overflow-y:scroll; */
     /* overflow:hidden; */
    
   }
@@ -30,6 +32,9 @@
     /* background: #f1f1f1; */
     border-top: 1px solid rgb(129, 124, 124);
 
+  }
+  .input-group {
+    padding: 10px 50px;
   }
 
 
@@ -45,10 +50,10 @@
   } */
 
   .home-chat{
-    position: fixed;
-    bottom: 0;
+    /* position: fixed; */
+    /* bottom: 0; */
     width: 100%;
-    overflow-y:scroll;
+    /* overflow-y:scroll; */
   }
 
   body {
@@ -106,3 +111,28 @@
     transform: scale(1);
     opacity: 1
   }
+
+  /* Not required for template or sticky footer method. */
+
+main > .container {
+  padding: 60px 15px 0;
+}
+
+.footer {
+  background-color: #343a40;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+
+.sticky-top {
+  top: 80px !important;
+  overflow-y: auto;
+  height: 500px;
+}
