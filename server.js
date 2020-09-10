@@ -1,19 +1,35 @@
 const express = require('express')
-var app = require('express')();
+var serv = require('express')();
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+const pool = require('./database');
 var port = process.env.PORT || 8001;
 var anonymousCount = 1;
 var users = [];
 const usersColors = {};
 var usersTyping = [];
 
-app.get('/', function (req, res) {
+
+app.use(express.json());
+
+app.post('/NodeJsDB', async(req, res)=>{
+    try {
+        await
+    } catch (e) {
+        console.error(e.message)
+    }
+})
+
+//Routes
+
+//
+
+serv.get('/', function (req, res) {
     res.sendFile(__dirname + '/interface.html');
 });
 
-app.use("/static", express.static('./static/'));
+serv.use("/static", express.static('./static/'));
 
 io.on('connection', socket => {
 

@@ -1,21 +1,33 @@
-const { Pool, Client } = require('pg')
-const express = require("express");
-const connectionString = 'postgressql://postgres:123456@localhost:5432/NodeJsDB'
+const Pool = require('pg').Pool;
 
-const app = express();
+const pool = new Pool({
+    user:"postgres",
+    password : "123456",
+    database : "NodeJsDB",
+    host: "localhost",
+    port:5432
+});
 
-console.log('ok');
+module.exports = pool; 
 
-const client = new Client({
-    connectionString:connectionString
-})
 
-client.connect()
+// const express = require("express");
+// const connectionString = 'postgressql://postgres:123456@localhost:5432/NodeJsDB'
 
-// client.query('SELECT * from "NodeJsSc"."Users"',(err, res) => {
-//     console.table(res.rows);
-//     client.end()
+// const app = express();
+
+// console.log('ok');
+
+// const client = new Client({
+//     connectionString:connectionString
 // })
 
-app.post('/',)
+// client.connect()
+
+// // client.query('SELECT * from "NodeJsSc"."Users"',(err, res) => {
+// //     console.table(res.rows);
+// //     client.end()
+// // })
+
+// app.post('/',)
 
