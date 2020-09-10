@@ -4,7 +4,7 @@ $(function () {
     const userName = prompt('Type your name here.');
     var listItems = document.getElementById("messages").getElementsByTagName("li");
     var typing = false;
-    
+    var connectedUsers = [];
     var currentUser ;
     
        
@@ -20,6 +20,7 @@ $(function () {
 
     //Call when a 'new user' event is emitted to this client.
     clientSocket.on('new user', user => { 
+        connectedUsers.push(user);
         if(currentUser.id == user.id){
             $('#messages').append($('<li>').text("You logged in"));
             listItems[listItems.length-1].style.left = "0%";
