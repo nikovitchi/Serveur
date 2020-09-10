@@ -108,10 +108,12 @@ $(function () {
     //Call when a 'chat message' event is received
     clientSocket.on('chat message', msg => {
         if (currentUser.id == msg.id) {
-            $('#messages').append($('<li>').text("You : " + msg.msg));
+            // $('#messages').append($('<li>').text("You : " + msg.msg));
+            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted pl-4">You</small><li>'+ msg.msg +'</li></div>'))
             listItems[listItems.length-1].style.left = "0%";
         } else {
-            $('#messages').append($('<li>').text(msg.user + msg.msg));
+            // $('#messages').append($('<li>').text(msg.user + msg.msg));
+            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted align-self-end" style="width:32%">'+ msg.user +'</small><li>'+ msg.msg +'</li></div>'))
             listItems[listItems.length-1].style.left = "65%";
             playSound("/static/notify.mp3");
         }
