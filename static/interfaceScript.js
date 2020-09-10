@@ -1,27 +1,34 @@
 
 $(function () {
     var clientSocket = io.connect();
-    var anonymousCount = 1;
-    var myName = prompt('Type your name here.');
+    const userName = prompt('Type your name here.');
     var listItems = document.getElementById("messages").getElementsByTagName("li");
     var typing = false;
-    var title = document.title;
     
-
-    //Call when the clientSocket get created.
-    clientSocket.emit('new user', myName);
+    var currentUser ;
+    
+       
+    clientSocket.on('connect', () => {
+        currentUser = {
+            name: userName,
+            id: clientSocket.id,
+            color: getRandomColor()
+        }
+        //Call when the clientSocket get created.
+        clientSocket.emit('new user', currentUser);
+    });
 
     //Call when a 'new user' event is emitted to this client.
-    clientSocket.on('new user', (name) => { 
-        if(clientSocket.socket.sessionid == myName){
+    clientSocket.on('new user', user => { 
+        if(currentUser.id == user.id){
             $('#messages').append($('<li>').text("You logged in"));
             listItems[listItems.length-1].style.left = "0%";
         }else{
-            $('#messages').append($('<li>').text(name + " logged in"));
+            $('#messages').append($('<li>').text(user.name + " logged in"));
             listItems[listItems.length-1].style.left = "65%";
         }
         listItems[listItems.length-1].style.background = "#4682B4";
-        $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
+        $('html,body').stop().animate({ scrollTop: $("html, body")[0].scrollHeight }, 1000);
     });
 
     //Call when the textfield content is sent by pressing the button or enter.
@@ -33,7 +40,7 @@ $(function () {
     });
 
     //Get user typing state.
-    $('#textField').on('keydown', function (name) {
+    $('#textField').on('keydown', function () {
         if (!typing) {
             typing = true;
             clientSocket.emit('userTyping');
@@ -67,59 +74,32 @@ $(function () {
     })
 
     //Call when a 'chat message' event is received
-    clientSocket.on('chat message', function (msg) {
-        
-        if (msg.name == myName + ' : ') {
+    clientSocket.on('chat message', msg => {
+        if (currentUser.id == msg.id) {
             $('#messages').append($('<li>').text("You : " + msg.msg));
-            //listItems[listItems.length-1].innerHTML = "hi";
+            listItems[listItems.length-1].style.left = "0%";
         } else {
-            $('#messages').append($('<li>').text(msg.name + msg.msg));
-            //listItems[listItems.length-1].innerHTML = "hi";
+            $('#messages').append($('<li>').text(msg.user + msg.msg));
+            listItems[listItems.length-1].style.left = "65%";
             playSound("/static/notify.mp3");
         }
         listItems[listItems.length-1].style.background = msg.color;
-        $('#messages').stop().animate({ scrollTop: $("#messages")[0].scrollHeight }, 1000);
-        if(msg.name == myName + ' : '){
-            
-            listItems[listItems.length-1].style.left = "0%";
-        }else{
-            listItems[listItems.length-1].style.left = "65%";
-        }
+        $('html,body').stop().animate({ scrollTop: $("html, body")[0].scrollHeight }, 1000);
     });
 
 })
-
-
-
-
 
 function playSound(url) {
     const audio = new Audio(url);
     audio.volume = 0.2;
     audio.play();
-  }
+}
 
-
-  function checkNamesForSpaces(name) {
-    var i = 0;
-
-    if (name.charAt(i) == '') {
-        name = 'Anonymous ' + anonymousCount
-        anonymousCount++;
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
     }
-
-    do {
-        if (name.charAt(i) == ' ') {
-            i++;
-        } else {
-            break;
-        }
-        if (i == name.length) {
-            name = 'Anonymous ' + anonymousCount
-            anonymousCount++;
-        }
-    }
-    while (i < name.length);
-
-    return name;
+    return color;
 }

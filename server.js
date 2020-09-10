@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 
 var port = process.env.PORT || 8001;
 var anonymousCount = 1;
-const users = {};
+var users = [];
 const usersColors = {};
 var usersTyping = [];
 
@@ -18,13 +18,12 @@ app.use("/static", express.static('./static/'));
 io.on('connection', socket => {
 
         //Call when a 'new user' event is received
-        socket.on('new user', name => {
-            name = checkNamesForSpaces(name);
-            users[socket.id] = name;
-            usersColors[socket.id] = getRandomColor();
-            //need to add user check if name already used
-            console.log(users[socket.id] + ' logged in')
-            io.emit('new user', name);
+        socket.on('new user', user => {
+            user.name = checkNamesForSpaces(user.name);
+            users[socket.id] = user;
+            // users[socket.id].color = getRandomColor();
+            console.log(users[socket.id].name + ' logged in')
+            io.emit('new user', user);
         });
 
         //Call when a 'chat message' event is received
@@ -32,7 +31,12 @@ io.on('connection', socket => {
             msg = checkMessagesIfEmpty(msg);
             if (msg.length == 0) {return;}
             if (users[socket.id] != null) {
-                io.emit('chat message', { msg: msg, name: users[socket.id] + ' : ', color: usersColors[socket.id] });
+                io.emit('chat message', {
+                    msg: msg,
+                    user: users[socket.id].name + ' : ',
+                    color : users[socket.id].color,
+                    id : users[socket.id].id
+                });
             }
         });
 
@@ -57,9 +61,9 @@ io.on('connection', socket => {
         //Call when a user disconnects
         socket.on('disconnect', () => {
             if (users[socket.id] != null) {
-                console.log(users[socket.id] + ' logged off')
+                console.log(users[socket.id].name + ' logged off')
                 io.emit('userLeft', users[socket.id]);
-                io.emit('chat message', { msg: users[socket.id] + ' logged off', name: "server : " });
+                io.emit('chat message', { msg: users[socket.id].name + ' logged off', user: "server : " });
             }
         })
 });
@@ -68,14 +72,6 @@ http.listen(port, function () {
     console.log('server is listening on *:' + port);
 });
 
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
 
 function checkNamesForSpaces(name) {
     var i = 0;
