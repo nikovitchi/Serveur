@@ -17,13 +17,14 @@ serv.listen(5000, ()=>{
     console.log('database connected on *: 5000');
 })
 
-//Routes
+//Routes Users
 
+//set user
 serv.post('/users', async(req, res)=>{
     try {
-        const { Name,Color,LogTime } = req.body;
-        const newUser = await pool.query('INSERT INTO "NodeJsSc"."UsersList" ("Name","Color","LogTime") VALUES ($1,$2,$3) RETURNING*',
-         [Name,Color,LogTime]
+        const { name,color,logTime,socketID } = req.body;
+        const newUser = await pool.query('INSERT INTO "NodeJsSc"."UsersList" ("name","color","logTime","socketID") VALUES ($1,$2,$3,$4) RETURNING*',
+         [name,color,logTime,socketID]
          );
 
         res.json(newUser);
@@ -33,6 +34,7 @@ serv.post('/users', async(req, res)=>{
     }
 })
 
+//get all users
 serv.get('/users', async(req, res)=>{
     try {
         const allUsers = await pool.query('SELECT * FROM "NodeJsSc"."UsersList"');
@@ -42,6 +44,60 @@ serv.get('/users', async(req, res)=>{
         console.log(e.message)
     }
 })
+
+//get 1 user
+serv.get('/users/:name', async(req, res)=>{
+    const { name } = req.params;
+    try {
+        const user = await pool.query('SELECT * FROM "NodeJsSc"."UsersList" WHERE "name" = $1', [name]);        
+        res.json(user.rows[0]);
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
+//update user
+serv.get('/users/:name', async(req, res)=>{
+    const { name } = req.params;
+    try {
+        const user = await pool.query('SELECT * FROM "NodeJsSc"."UsersList" WHERE "name" = $1', [name]);        
+        res.json(user.rows[0]);
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
+
+//delet user
+
+//Routes messages
+
+//get all messages
+serv.get('/messages', async(req, res)=>{
+    try {
+        const allMessages = await pool.query('SELECT * FROM "NodeJsSc"."MessagesList"');
+        res.json(allMessages.rows);
+        // console.log(req.body);
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
+//set message
+serv.post('/messages', async(req, res)=>{
+    try {
+        const { message,senderName,sendTime,color } = req.body;
+        const newMessage = await pool.query('INSERT INTO "NodeJsSc"."MessagesList" ("message","senderName","sendTime","color") VALUES ($1,$2,$3,$4) RETURNING*',
+         [message,senderName,sendTime,color]
+         );
+
+        res.json(newMessage);
+        // console.log(req.body);
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
 
 
 module.exports = pool; 

@@ -22,37 +22,51 @@ $(function () {
 
         currentUser = {
             name: userName,
-            id: clientSocket.id,
+            socketID: clientSocket.id,
             color: getRandomColor(),
             logTime : d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
         }
         //Call when the clientSocket get created.
         clientSocket.emit('new user', currentUser);
+        clientSocket.emit('request all messages', currentUser);
     });
 
+    clientSocket.on('initiate Messages', res => {
+        for (i=0 ; i<Math.min(50,res.length) ; i++){
+            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted align-self-end" style="width:32%">'+ res[i].senderName +'</small><li class="text-break">'+ res[i].message +'</li></div>'))
+            listItems[listItems.length-1].style.left = "65%";
+            listItems[i].style.background = res[i].color;
+        }
+    })
+
     clientSocket.on('userLeft', user => {
-        const index = connectedUsers.findIndex(e => e.id === user.id);
+        const index = connectedUsers.findIndex(e => e.socketID === user.socketID);
         if(index > -1) {
           connectedUsers.splice(index, 1);
         }
-        $('#'+user.id).remove();
+        $('#'+user.socketID).remove();
         $('#nbrContact').text(connectedUsers.length);
     })
 
     //Call when a 'new user' event is emitted to this client.
     clientSocket.on('new user', user => { 
         connectedUsers.push(user);
-        if(currentUser.id == user.id){
-            $('#messages').append($('<li>').text("You logged in"));
-            listItems[listItems.length-1].style.left = "0%";
-        }else{
-            $('#messages').append($('<li>').text(user.name + " logged in"));
-            listItems[listItems.length-1].style.left = "65%";
-        }
-        listItems[listItems.length-1].style.background = "#4682B4";
+
+
+        // if(currentUser.socketID == user.socketID){
+        //     $('#messages').append($('<li>').text("You logged in"));
+        //     listItems[listItems.length-1].style.left = "0%";
+        // }else{
+        //     $('#messages').append($('<li>').text(user.name + " logged in"));
+        //     listItems[listItems.length-1].style.left = "65%";
+        // }
+        // listItems[listItems.length-1].style.background = "#4682B4";
+        //$('html,body').stop().animate({ scrollTop: $("html, body")[0].scrollHeight }, 1000);
+
+
         $('#nbrContact').text(connectedUsers.length)
         if(connectedUsers){
-          $('#contactList').append($('<li id="'+ user.id +'" class="list-group-item d-flex justify-content-between lh-condensed">\
+          $('#contactList').append($('<li id="'+ user.socketID +'" class="list-group-item d-flex justify-content-between lh-condensed">\
           <div>\
             <h6 class="my-0">'+ user.name +'</h6>\
             <small class="text-muted"> Connected on : '+ user.logTime + '</small>\
@@ -60,7 +74,7 @@ $(function () {
           <span class="text-muted">connected</span>\
         </li>'))
         }
-        $('html,body').stop().animate({ scrollTop: $("html, body")[0].scrollHeight }, 1000);
+        
     });
 
     //Call when the textfield content is sent by pressing the button or enter.
@@ -108,7 +122,7 @@ $(function () {
     //Call when a 'chat message' event is received
     clientSocket.on('chat message', msg => {
     
-        if (currentUser.id == msg.id) {
+        if (currentUser.socketID == msg.socketID) {
             // $('#messages').append($('<li class="text-break">').text("You : " + msg.msg));
             $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted pl-4">You</small><li class="text-break">'+ msg.msg +'</li></div>'))
             listItems[listItems.length-1].style.left = "0%";

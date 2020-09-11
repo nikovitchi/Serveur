@@ -23,17 +23,35 @@ io.on('connection', socket => {
 
         //Call when a 'new user' event is received
         socket.on('new user', user => {
-            user.name = checkNamesForSpaces(user.name);
-            users[socket.id] = user;
-            // users[socket.id].color = getRandomColor();
-            console.log(users[socket.id].name + ' logged in')
+            getUserWithNameFromDB(user.name).then ((res) =>{
+                if (res.data.name != undefined){
+                    console.log('user found already');
+                    user = res.data;
+                    users[socket.id] = user;
+                }else{
+                    console.log('no user found with this name');
+                    user.name = checkNamesForSpaces(user.name);
+                    users[socket.id] = user;
+                    addUserToDB(user);
+                }
             io.emit('new user', user);
-            addUserToDB(user);
-            getUserFromDB(user);
-        });
+            }).catch((e)=>{
+                console.log("new user made :"+e.message)
+            })   
+        })
 
+        socket.on('request all messages', user =>{
+            getAllMessagesFromDB().then ((res) =>{
+               //console.log(res);
+                io.to(user.socketID).emit('initiate Messages', res.data);
+            }).catch((e)=>{
+                console.log("request all messages made :"+e.message)
+            })
+            })
+        
         //Call when a 'chat message' event is received
         socket.on('chat message', msg => {
+            addMessageToDB(msg,users[socket.id].name,"need to add date",users[socket.id].color).then((res)=>{
             // msg = msg.replace("inch", "****");
             msg = msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             if (!msg || /^\s*$/.test(msg)) {return;}
@@ -42,9 +60,14 @@ io.on('connection', socket => {
                     msg: msg,
                     user: users[socket.id].name + ' : ',
                     color : users[socket.id].color,
-                    id : users[socket.id].id
+                    socketID : users[socket.id].socketID
                 });
             }
+            }).catch((e)=>{
+                console.log("chat message made :"+e.message)
+            })
+        
+        
         });
 
         //Call when a 'userTyping' event is received
@@ -74,21 +97,22 @@ io.on('connection', socket => {
             }
            
         })
-});
 
-http.listen(port, function () {
-    console.log('server is listening on *:' + port);
-});
+        
+
+
+
+
+
+
 
 
 function checkNamesForSpaces(name) {
     var i = 0;
-
     if (name.charAt(i) == '') {
         name = 'Anonymous ' + anonymousCount
         anonymousCount++;
     }
-
     do {
         if (name.charAt(i) == ' ') {
             i++;
@@ -101,33 +125,57 @@ function checkNamesForSpaces(name) {
         }
     }
     while (i < name.length);
-
     return name;
 }
+
+//DB Functions
 
 function addUserToDB(user){
     axios.post(
         url+'users',
     {
-        Name : user.name,
-        Color : user.color,
-        LogTime : user.logTime
+        name : user.name,
+        color : user.color,
+        logTime : user.logTime,
+        socketID : socket.id
     }
-    ).then((res) => {
-        // console.log(`statusCode: ${res.statusCode}`);
-        // console.log(res);
-    }).catch((e)=>{
-        console.error(e);
-    })
+    )
 }
 
-function getUserFromDB(user){
-    axios.get(
-        url+'users',
-    ).then((res) => {
-        var allUsers = res.data
-        console.log(allUsers[allUsers.length-1]);
-    }).catch((e)=>{
-        console.error(e);
-    })
+async function getAllUsersFromDB() {
+    return Promise.resolve(
+        await axios.get(url + 'users',)
+    )
 }
+
+async function getUserWithNameFromDB(userName) {
+    return Promise.resolve(
+        await axios.get(url + 'users/'+ userName)
+    )
+}
+
+async function getAllMessagesFromDB() {
+    return Promise.resolve(
+        await axios.get(url + 'messages/')
+    )
+}
+
+async function addMessageToDB(message, senderName, sendTime, color) {
+    return Promise.resolve(await axios.post(
+        url + 'messages',
+        {
+            message: message,
+            senderName: senderName,
+            sendTime: sendTime,
+            color: color
+        })
+    )
+}
+    
+
+});
+
+
+http.listen(port, function () {
+    console.log('server is listening on *:' + port);
+});
