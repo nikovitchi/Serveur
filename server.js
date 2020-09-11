@@ -1,5 +1,5 @@
 const express = require('express')
-var serv = require('express')();
+
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -11,32 +11,6 @@ const usersColors = {};
 var usersTyping = [];
 const url="http://192.168.0.109:5000/";
 var axios = require('axios');
-
-
-
-serv.use(express.json());
-
-//Routes
-
-//Create User
-serv.post('/users', async(req, res)=>{
-    try {
-        const { Name,Color } = req.body;
-        const newUser = await pool.query('INSERT INTO "NodeJsSc"."UsersList" ("Name","Color") VALUES ($1,$2) RETURNING*',
-         [Name,Color]
-         );
-
-        res.json(newUser);
-        console.log(req.body);
-    } catch (e) {
-        console.log(e.message)
-    }
-})
-
-serv.listen(5000, ()=>{
-    console.log('database connected on *: 5000');
-})
-
 
 
 app.get('/', function (req, res) {
@@ -54,24 +28,14 @@ io.on('connection', socket => {
             // users[socket.id].color = getRandomColor();
             console.log(users[socket.id].name + ' logged in')
             io.emit('new user', user);
-            axios.post(
-                url+'users',
-            {
-                Name : user.name,
-                Color : user.color
-            }
-            ).then((res) => {
-                // console.log(`statusCode: ${res.statusCode}`);
-                // console.log(res);
-            }).catch((e)=>{
-                console.error(e);
-            })
-            
+            addUserToDB(user);
+            getUserFromDB(user);
         });
 
         //Call when a 'chat message' event is received
         socket.on('chat message', msg => {
-            msg = msg.replace("inch", "****");
+            // msg = msg.replace("inch", "****");
+            msg = msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             if (!msg || /^\s*$/.test(msg)) {return;}
             if (users[socket.id] != null) {
                 io.emit('chat message', {
@@ -139,4 +103,31 @@ function checkNamesForSpaces(name) {
     while (i < name.length);
 
     return name;
+}
+
+function addUserToDB(user){
+    axios.post(
+        url+'users',
+    {
+        Name : user.name,
+        Color : user.color,
+        LogTime : user.logTime
+    }
+    ).then((res) => {
+        // console.log(`statusCode: ${res.statusCode}`);
+        // console.log(res);
+    }).catch((e)=>{
+        console.error(e);
+    })
+}
+
+function getUserFromDB(user){
+    axios.get(
+        url+'users',
+    ).then((res) => {
+        var allUsers = res.data
+        console.log(allUsers[allUsers.length-1]);
+    }).catch((e)=>{
+        console.error(e);
+    })
 }

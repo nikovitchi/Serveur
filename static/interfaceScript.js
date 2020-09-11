@@ -6,7 +6,7 @@ $(function () {
     var typing = false;
     var connectedUsers = [];
     var currentUser ;
-    
+    var d = new Date();
        
     clientSocket.on('connect', () => {
         
@@ -23,25 +23,20 @@ $(function () {
         currentUser = {
             name: userName,
             id: clientSocket.id,
-            color: getRandomColor()
+            color: getRandomColor(),
+            logTime : d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()
         }
         //Call when the clientSocket get created.
         clientSocket.emit('new user', currentUser);
     });
 
     clientSocket.on('userLeft', user => {
-      // if(connectedUsers){
-        // connectedUsers.map(function(e) {return e.id;}).indexOf()
         const index = connectedUsers.findIndex(e => e.id === user.id);
-        console.log(index, user);
         if(index > -1) {
-          console.log("here2");
           connectedUsers.splice(index, 1);
-          console.log(connectedUsers);
         }
         $('#'+user.id).remove();
         $('#nbrContact').text(connectedUsers.length);
-      // }
     })
 
     //Call when a 'new user' event is emitted to this client.
@@ -55,14 +50,12 @@ $(function () {
             listItems[listItems.length-1].style.left = "65%";
         }
         listItems[listItems.length-1].style.background = "#4682B4";
-        console.log(connectedUsers);
         $('#nbrContact').text(connectedUsers.length)
-        var d = new Date();
         if(connectedUsers){
           $('#contactList').append($('<li id="'+ user.id +'" class="list-group-item d-flex justify-content-between lh-condensed">\
           <div>\
             <h6 class="my-0">'+ user.name +'</h6>\
-            <small class="text-muted"> Connected on : '+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+ '</small>\
+            <small class="text-muted"> Connected on : '+ user.logTime + '</small>\
           </div>\
           <span class="text-muted">connected</span>\
         </li>'))
@@ -114,6 +107,7 @@ $(function () {
 
     //Call when a 'chat message' event is received
     clientSocket.on('chat message', msg => {
+    
         if (currentUser.id == msg.id) {
             // $('#messages').append($('<li class="text-break">').text("You : " + msg.msg));
             $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted pl-4">You</small><li class="text-break">'+ msg.msg +'</li></div>'))
