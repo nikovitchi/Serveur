@@ -9,10 +9,17 @@ $(function () {
     
        
     clientSocket.on('connect', () => {
-      userName = prompt('Type your name here.')
-        if(userName == null){
-            userName = '';
-        }
+        
+        i=0, msg = "Type your name here."
+        do{
+            i++;
+            if(i > 1) msg = "dok hada assem, inch ?";
+            userName = prompt(msg,'');
+            if(userName == null){
+                userName = '';
+            }
+        }while(userName.length > 20)
+
         currentUser = {
             name: userName,
             id: clientSocket.id,
@@ -108,12 +115,12 @@ $(function () {
     //Call when a 'chat message' event is received
     clientSocket.on('chat message', msg => {
         if (currentUser.id == msg.id) {
-            // $('#messages').append($('<li>').text("You : " + msg.msg));
-            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted pl-4">You</small><li>'+ msg.msg +'</li></div>'))
+            // $('#messages').append($('<li class="text-break">').text("You : " + msg.msg));
+            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted pl-4">You</small><li class="text-break">'+ msg.msg +'</li></div>'))
             listItems[listItems.length-1].style.left = "0%";
         } else {
-            // $('#messages').append($('<li>').text(msg.user + msg.msg));
-            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted align-self-end" style="width:32%">'+ msg.user +'</small><li>'+ msg.msg +'</li></div>'))
+            // $('#messages').append($('<li class="text-break">').text(msg.user + msg.msg));
+            $('#messages').append($('<div class="form-group d-flex flex-column"><small class="form-text text-muted align-self-end" style="width:32%">'+ msg.user +'</small><li class="text-break">'+ msg.msg +'</li></div>'))
             listItems[listItems.length-1].style.left = "65%";
             playSound("/static/notify.mp3");
         }

@@ -9,27 +9,41 @@ var anonymousCount = 1;
 var users = [];
 const usersColors = {};
 var usersTyping = [];
+const url="http://192.168.0.109:5000/";
+var axios = require('axios');
 
 
-app.use(express.json());
 
-app.post('/NodeJsDB', async(req, res)=>{
-    try {
-        await
-    } catch (e) {
-        console.error(e.message)
-    }
-})
+serv.use(express.json());
 
 //Routes
 
-//
+//Create User
+serv.post('/users', async(req, res)=>{
+    try {
+        const { Name,Color } = req.body;
+        const newUser = await pool.query('INSERT INTO "NodeJsSc"."UsersList" ("Name","Color") VALUES ($1,$2) RETURNING*',
+         [Name,Color]
+         );
 
-serv.get('/', function (req, res) {
+        res.json(newUser);
+        console.log(req.body);
+    } catch (e) {
+        console.log(e.message)
+    }
+})
+
+serv.listen(5000, ()=>{
+    console.log('database connected on *: 5000');
+})
+
+
+
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/interface.html');
 });
 
-serv.use("/static", express.static('./static/'));
+app.use("/static", express.static('./static/'));
 
 io.on('connection', socket => {
 
@@ -40,6 +54,19 @@ io.on('connection', socket => {
             // users[socket.id].color = getRandomColor();
             console.log(users[socket.id].name + ' logged in')
             io.emit('new user', user);
+            axios.post(
+                url+'users',
+            {
+                Name : user.name,
+                Color : user.color
+            }
+            ).then((res) => {
+                // console.log(`statusCode: ${res.statusCode}`);
+                // console.log(res);
+            }).catch((e)=>{
+                console.error(e);
+            })
+            
         });
 
         //Call when a 'chat message' event is received
@@ -81,6 +108,7 @@ io.on('connection', socket => {
                 io.emit('userLeft', users[socket.id]);
                 io.emit('chat message', { msg: users[socket.id].name + ' logged off', user: "server : " });
             }
+           
         })
 });
 
